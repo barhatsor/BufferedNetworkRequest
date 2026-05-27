@@ -1,5 +1,10 @@
 import { JSONObjectStream } from "bufferednetworkrequest";
 //#region bench/throttle.ts
+/**
+* Simulated network profiles matching Chrome DevTools throttling presets. \
+* `bytesPerSecond` = download throughput, `latencyMs` = initial round-trip delay. \
+* [DevTools Source](https://github.com/ChromeDevTools/devtools-frontend/blob/d171921829581f059b68230952d7c4da3bc499eb/front_end/core/sdk/NetworkManager.ts#L498-L540)
+*/
 const throttleProfiles = {
 	none: {
 		bytesPerSecond: Infinity,
@@ -18,9 +23,13 @@ const throttleProfiles = {
 		latencyMs: 400 * 5
 	}
 };
-function throttleStream(body, profile) {
+/**
+* Simulates a slow network connection by wrapping a `Response`'s `ReadableStream`
+* in a `TransformStream` that limits how fast data passes through.
+*/
+function throttleStream({ stream, profile }) {
 	let initialDelay = true;
-	return body.pipeThrough(new TransformStream({ async transform(chunk, controller) {
+	return stream.pipeThrough(new TransformStream({ async transform(chunk, controller) {
 		if (initialDelay && profile.latencyMs > 0) {
 			await sleep(profile.latencyMs);
 			initialDelay = false;
@@ -48,9 +57,6 @@ const cancelButton = document.querySelector("#cancel");
 function getSelectedProfile() {
 	return throttleSelect.value;
 }
-function clear() {
-	statusEl.innerHTML = "";
-}
 function setRunning(value) {
 	runButton.disabled = value;
 	cancelButton.disabled = !value;
@@ -61,11 +67,14 @@ function onRun(handler) {
 function onCancel(handler) {
 	cancelButton.addEventListener("click", handler);
 }
+function clear() {
+	statusEl.innerHTML = "";
+}
 function log(tag, text) {
 	const el = document.createElement(tag);
 	el.textContent = text;
 	statusEl.appendChild(el);
-	return el;
+	scrollToBottom();
 }
 function scrollToBottom() {
 	document.body.scrollIntoView({ block: "end" });
@@ -94,35 +103,39 @@ async function run() {
 			cache: "no-store",
 			signal
 		});
-		if (!response.ok || !response.body) {
-			log("h3", "An error occured while fetching the response.");
+		if (!response.ok) throw new Error(`Request failed: Code ${response.status}`);
+		if (!response.body) throw new Error(`Response was empty.`);
+		showResults(await streamObjects({
+			respBody: profile.latencyMs !== 0 || isFinite(profile.bytesPerSecond) ? throttleStream({
+				stream: response.body,
+				profile
+			}) : response.body,
+			signal
+		}));
+		console.info("[done] response", response);
+	} catch (error) {
+		if (isAbortError(error)) {
+			log("h3", "Cancelled.");
 			return;
 		}
-		showResults(await streamObjects(profile.latencyMs > 0 || isFinite(profile.bytesPerSecond) ? throttleStream(response.body, profile) : response.body, signal));
-		console.info("[done] response", response);
-	} catch (e) {
-		if (e instanceof DOMException && e.name === "AbortError") {
-			log("h3", "Cancelled.");
-			scrollToBottom();
-		} else throw e;
+		throw error;
 	} finally {
 		running = false;
 		setRunning(false);
 	}
 }
-async function streamObjects(body, signal) {
+async function streamObjects({ respBody, signal }) {
 	const startTime = performance.now();
 	let prevTime = startTime;
 	let firstLoadTime = null;
 	let totalObjects = 0;
-	const stream = new JSONObjectStream(body);
+	const stream = new JSONObjectStream(respBody);
 	for await (const objects of stream) {
 		signal.throwIfAborted();
 		totalObjects += objects.length;
 		for (const object of objects) log("code", JSON.stringify(object));
 		const now = performance.now();
 		log("h2", `loaded ${objects.length} in +${round(now - prevTime, 2)}ms`);
-		scrollToBottom();
 		prevTime = now;
 		firstLoadTime ??= now;
 	}
@@ -139,7 +152,10 @@ function showResults({ startTime, firstLoadTime, totalObjects }) {
 	const improvement = round(timeSaved / totalTime * 100, 2);
 	log("h3", `done. (loaded ${totalObjects} objects)`);
 	log("h1", `time saved: ${improvement}% (${round(timeSaved / 1e3, 2)}s of ${round(totalTime / 1e3, 2)}s)`);
-	scrollToBottom();
+}
+/** https://webidl.spec.whatwg.org/#aborterror */
+function isAbortError(error) {
+	return error instanceof DOMException && error.name === "AbortError";
 }
 //#endregion
 

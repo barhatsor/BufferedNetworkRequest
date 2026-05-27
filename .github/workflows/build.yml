@@ -3,35 +3,28 @@ name: Build
 
 on:
   push:
-  
-    branches: ['main']
-    
-    # see: https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#example-including-paths
-    paths:
-      - 'src/**'
-      - './build.yml'
-      
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [26.x]
-
+    timeout-minutes: 10
     steps:
-    
-    - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
         
-    - name: Build
-      run: |
-          npm install
-          npm run build
-    
-    # push changes to GitHub
-    - uses: stefanzweifel/git-auto-commit-action@v7
-      with:
-        commit_message: 'Build'
+      - name: Build
+        run: npm run build
+      
+      # push changes to GitHub
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'Build'

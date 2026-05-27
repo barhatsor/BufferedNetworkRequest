@@ -9,16 +9,15 @@ const banner = `
 
 export default defineConfig([
   {
-    entry: ['src/index.ts'],
+    entry: 'src/index.ts',
     sourcemap: true,
     dts: true,
     clean: true,
-    exports: true,
     platform: 'neutral',
     banner: banner
   },
   {
-    entry: ['src/index.ts'],
+    entry: 'src/index.ts',
     minify: true,
     sourcemap: true,
     dts: false,
@@ -26,5 +25,5 @@ export default defineConfig([
     outExtensions: () => ({ js: '.min.js' }),
     platform: 'neutral',
     banner: banner
-  },
+  }
 ])

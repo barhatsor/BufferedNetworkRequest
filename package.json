@@ -1,7 +1,7 @@
 {
   "name": "bufferednetworkrequest",
   "type": "module",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Make your interfaces render ~30% faster on 3G using streams and partial JSON parsing.",
   "author": "benhatsor",
   "license": "MIT",
@@ -16,20 +16,16 @@
   "keywords": [
     "fetch",
     "network",
+    "json",
     "response",
     "stream",
-    "request",
-    "buffer",
-    "parser",
-    "object",
-    "json",
-    "typescript",
-    "javascript",
-    "nodejs"
+    "request"
   ],
-  "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -46,9 +42,9 @@
     "demos:dev": "tsdown --config demos/tsdown.config.ts --watch"
   },
   "devDependencies": {
-    "@vitest/browser-playwright": "^4.1.4",
-    "tsdown": "^0.21.7",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.4"
+    "@vitest/browser-playwright": "^4.1.7",
+    "tsdown": "^0.22.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

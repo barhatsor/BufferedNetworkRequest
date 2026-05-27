@@ -5,4 +5,4 @@
 
 export * from './TextStream'
 export * from './JSONObjectStream'
-export { default as IncompleteJSONParser } from './IncompleteJSONParser'
+export * from './IncompleteJSONParser'

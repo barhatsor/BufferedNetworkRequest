@@ -2,13 +2,15 @@
 
 Make your interfaces render ~30% faster on 3G using streams and partial JSON parsing.
 
-[![NPM version](https://img.shields.io/npm/v/bufferednetworkrequest)](https://www.npmjs.com/package/bufferednetworkrequest) [![Minified size](https://img.shields.io/github/size/benhatsor/BufferedNetworkRequest/dist/index.min.js)](/dist/index.min.js) [![License](https://img.shields.io/github/license/benhatsor/BufferedNetworkRequest.svg)](/LICENSE) 
+[![NPM version][npm-version-img]][npm-version-url]
+[![Minified size][minified-size-img]][minified-size-url]
+[![CI][ci-src]][ci-href]
 
 - Stream network requests as they arrive
 - Extract valid JSON objects from incomplete chunks
-- **~30% faster** [First Contentful Paint][1] on 3G
+- **~30% faster** [First Contentful Paint] on 3G
 
-[Benchmark](https://cde.run/benhatsor/BufferedNetworkRequest/demos/bench/index.html) | [Basic Demo](https://cde.run/benhatsor/BufferedNetworkRequest/demos/basic-demo/index.html)
+[Benchmark] | [Basic Demo]
 
 ## Installation
 
@@ -41,7 +43,7 @@ let respObjects = []
 
 for await (const objects of stream) {
     // do something with the chunk
-    respObject.push(...objects)
+    respObjects.push(...objects)
 }
 
 console.log(respObjects)
@@ -71,7 +73,7 @@ console.log(text)
 
 ## Architecture
 
-The library uses the [Web Streams API][2]. `TextStreamInterface<ChunkType>` is an abstract base class that pipes a `Response.body` through a `TextDecoderStream` and exposes an async iterator. Subclasses implement `processChunk()` to transform each text chunk:
+The library uses the [Web Streams API]. `TextStreamInterface<ChunkType>` is an abstract base class that pipes a `Response.body` through a `TextDecoderStream` and exposes an async iterator. Subclasses implement `processChunk()` to transform each text chunk:
 
 - [**TextStream**](src/TextStream.ts) — Returns raw text chunks as-is
 - [**JSONObjectStream**](src/JSONObjectStream.ts) — Accumulates chunks into a JSON string, uses `IncompleteJSONParser` to extract complete objects as they come in, and yields only newly-completed objects (no duplicates across iterations)
@@ -94,5 +96,16 @@ npm run test
 [MIT](/LICENSE)
 
 
-[1]: https://web.dev/articles/fcp
-[2]: https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
+<!-- References -->
+[First Contentful Paint]: https://web.dev/articles/fcp
+[Benchmark]: https://cde.run/benhatsor/BufferedNetworkRequest/demos/bench/index.html
+[Basic Demo]: https://cde.run/benhatsor/BufferedNetworkRequest/demos/basic-demo/index.html
+[Web Streams API]: https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
+
+<!-- Badges -->
+[npm-version-img]: https://img.shields.io/npm/v/bufferednetworkrequest
+[npm-version-url]: https://www.npmjs.com/package/bufferednetworkrequest
+[minified-size-img]: https://img.shields.io/github/size/benhatsor/BufferedNetworkRequest/dist/index.min.js
+[minified-size-url]: /dist/index.min.js
+[ci-src]: https://github.com/benhatsor/BufferedNetworkRequest/actions/workflows/ci.yml/badge.svg
+[ci-href]: https://github.com/benhatsor/BufferedNetworkRequest/actions/workflows/ci.yml

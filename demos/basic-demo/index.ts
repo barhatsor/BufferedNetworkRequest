@@ -9,9 +9,12 @@ const response = await fetch('https://jsonplaceholder.typicode.com/photos', {
     cache: 'no-store'
 })
 
-if (!response.ok || !response.body) {
-    statusEl.textContent = `An error occured while fetching the response.`
-    throw new Error()
+if (!response.ok) throwError(`Request failed: Code ${response.status}`)
+if (!response.body) throwError(`Response was empty.`)
+
+function throwError(message: string): never {
+    statusEl.textContent = message
+    throw new Error(message)
 }
 
 

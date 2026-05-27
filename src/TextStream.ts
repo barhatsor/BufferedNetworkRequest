@@ -3,7 +3,7 @@
  * A generic interface for streaming processed text chunks from a `Response`.
  * @template ChunkType The processed chunk type to stream.
  */
-export abstract class TextStreamInterface<ChunkType> {
+export abstract class TextStreamInterface<ChunkType> implements AsyncIterable<ChunkType> {
 
     private stream: ReadableStream<string>
 
@@ -22,11 +22,11 @@ export abstract class TextStreamInterface<ChunkType> {
 
     }
 
-    async *[Symbol.asyncIterator]() {
+    async *[Symbol.asyncIterator](): AsyncIterableIterator<ChunkType> {
 
-        const asyncIteratorSupported = Symbol.asyncIterator in this.stream
+        const streamAsyncIteratorSupported = Symbol.asyncIterator in this.stream
 
-        const asyncIterableStream = asyncIteratorSupported ?
+        const asyncIterableStream = streamAsyncIteratorSupported ?
             this.stream :
             this.polyfillReadableStreamAsyncIterator(this.stream)
 
@@ -46,31 +46,37 @@ export abstract class TextStreamInterface<ChunkType> {
     protected abstract processChunk(chunk: string): ChunkType | null
 
     /**
-     * Polyfill `ReadableStream`'s async iterator for Safari.
-     * @see https://caniuse.com/wf-async-iterable-streams
+     * Polyfill `ReadableStream`'s async iterator for Safari
+     * (not neccessary in Safari 26.4+).
+     * @see https://caniuse.com/mdn-api_readablestream_--asynciterator
      */
-    private polyfillReadableStreamAsyncIterator(stream: ReadableStream<string>) {
+    private async *polyfillReadableStreamAsyncIterator(
+        stream: ReadableStream<string>
+    ): AsyncGenerator<string> {
 
-        return {
+        const reader = stream.getReader()
 
-            async *[Symbol.asyncIterator](): ReadableStreamAsyncIterator<string> {
+        try {
 
-                const reader = stream.getReader()
+            let result: ReadableStreamReadResult<string>
 
-                let result: ReadableStreamReadResult<string>
+            while (
+                result = await reader.read(),
+                !result.done
+            ) {
 
-                while (
-                    result = await reader.read(),
-                    !result.done
-                ) {
-
-                    const chunk = result.value
-
-                    yield chunk
-
-                }
+                yield result.value
 
             }
+
+        } catch (error) {
+
+            await reader.cancel(error)
+            throw error
+
+        } finally {
+
+            reader.releaseLock()
 
         }
 
