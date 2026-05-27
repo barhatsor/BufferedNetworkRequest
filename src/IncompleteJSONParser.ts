@@ -2,7 +2,7 @@
 /**
  * Extracts valid objects from incomplete JSON.
  */
-export default new class IncompleteJSONParser {
+export const IncompleteJSONParser = {
 
     parse(jsonStr: string): object[] {
 
@@ -71,8 +71,10 @@ export default new class IncompleteJSONParser {
 
         validJSONStr = validJSONStr.trim()
 
-        if (validJSONStr.startsWith('[') &&
-            !validJSONStr.endsWith(']')) {
+        if (
+            validJSONStr.startsWith('[') &&
+            !validJSONStr.endsWith(']')
+        ) {
 
             // if the string ends with a comma,
             // remove it

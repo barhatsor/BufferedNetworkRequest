@@ -2,7 +2,7 @@ import { defineConfig, type UserConfig } from 'tsdown'
 
 function getDemoConfig(demoDir: string): UserConfig {
   return {
-    entry: [`${demoDir}/index.ts`],
+    entry: `${demoDir}/index.ts`,
     outDir: `${demoDir}/build`,
     format: 'esm',
     platform: 'browser',

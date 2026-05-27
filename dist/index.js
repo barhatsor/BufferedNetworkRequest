@@ -8,7 +8,6 @@
 * @template ChunkType The processed chunk type to stream.
 */
 var TextStreamInterface = class {
-	stream;
 	/**
 	* @param respBody A `Response`'s `body`.
 	* @param textDecoderStream A custom text decoder stream to use.
@@ -25,15 +24,21 @@ var TextStreamInterface = class {
 		}
 	}
 	/**
-	* Polyfill `ReadableStream`'s async iterator for Safari.
-	* @see https://caniuse.com/wf-async-iterable-streams
+	* Polyfill `ReadableStream`'s async iterator for Safari
+	* (not neccessary in Safari 26.4+).
+	* @see https://caniuse.com/mdn-api_readablestream_--asynciterator
 	*/
-	polyfillReadableStreamAsyncIterator(stream) {
-		return { async *[Symbol.asyncIterator]() {
-			const reader = stream.getReader();
+	async *polyfillReadableStreamAsyncIterator(stream) {
+		const reader = stream.getReader();
+		try {
 			let result;
 			while (result = await reader.read(), !result.done) yield result.value;
-		} };
+		} catch (error) {
+			await reader.cancel(error);
+			throw error;
+		} finally {
+			reader.releaseLock();
+		}
 	}
 };
 /**
@@ -49,59 +54,60 @@ var TextStream = class extends TextStreamInterface {
 /**
 * Extracts valid objects from incomplete JSON.
 */
-var IncompleteJSONParser_default = new class IncompleteJSONParser {
-	parse(jsonStr) {
-		let objNestingCounter = 0;
-		let lastValidIndex = 0;
-		let inString = false;
-		for (let i = 0; i < jsonStr.length; i++) {
-			const char = jsonStr[i];
-			if (inString && char === "\\") {
-				i++;
-				continue;
-			}
-			if (char === "\"") {
-				inString = !inString;
-				continue;
-			}
-			if (inString) continue;
-			if (char === "{") {
-				if (objNestingCounter === 0) lastValidIndex = i - 1;
-				objNestingCounter++;
-			} else if (char === "}") objNestingCounter--;
+const IncompleteJSONParser = { parse(jsonStr) {
+	let objNestingCounter = 0;
+	let lastValidIndex = 0;
+	let inString = false;
+	for (let i = 0; i < jsonStr.length; i++) {
+		const char = jsonStr[i];
+		if (inString && char === "\\") {
+			i++;
+			continue;
 		}
-		let validJSONStr = jsonStr;
-		if (objNestingCounter !== 0) validJSONStr = jsonStr.slice(0, lastValidIndex + 1);
-		validJSONStr = validJSONStr.trim();
-		if (validJSONStr.startsWith("[") && !validJSONStr.endsWith("]")) {
-			if (validJSONStr.endsWith(",")) validJSONStr = validJSONStr.slice(0, -1);
-			validJSONStr += "]";
+		if (char === "\"") {
+			inString = !inString;
+			continue;
 		}
-		let completedJSONObjects = [];
-		if (validJSONStr) {
-			completedJSONObjects = JSON.parse(validJSONStr);
-			if (!Array.isArray(completedJSONObjects)) completedJSONObjects = [completedJSONObjects];
-		}
-		return completedJSONObjects;
+		if (inString) continue;
+		if (char === "{") {
+			if (objNestingCounter === 0) lastValidIndex = i - 1;
+			objNestingCounter++;
+		} else if (char === "}") objNestingCounter--;
 	}
-}();
+	let validJSONStr = jsonStr;
+	if (objNestingCounter !== 0) validJSONStr = jsonStr.slice(0, lastValidIndex + 1);
+	validJSONStr = validJSONStr.trim();
+	if (validJSONStr.startsWith("[") && !validJSONStr.endsWith("]")) {
+		if (validJSONStr.endsWith(",")) validJSONStr = validJSONStr.slice(0, -1);
+		validJSONStr += "]";
+	}
+	let completedJSONObjects = [];
+	if (validJSONStr) {
+		completedJSONObjects = JSON.parse(validJSONStr);
+		if (!Array.isArray(completedJSONObjects)) completedJSONObjects = [completedJSONObjects];
+	}
+	return completedJSONObjects;
+} };
 //#endregion
 //#region src/JSONObjectStream.ts
 /**
 * Stream completed JSON objects in chunks from a `Response`.
 */
 var JSONObjectStream = class extends TextStreamInterface {
-	fullJSONStr = "";
-	lastCompletedJSONObjectCount = 0;
+	constructor(..._args) {
+		super(..._args);
+		this.fullJSONStr = "";
+		this.lastCompletedJSONObjectCount = 0;
+	}
 	processChunk(chunk) {
 		this.fullJSONStr += chunk;
-		const newCompletedJSONObjects = IncompleteJSONParser_default.parse(this.fullJSONStr).slice(this.lastCompletedJSONObjectCount);
+		const newCompletedJSONObjects = IncompleteJSONParser.parse(this.fullJSONStr).slice(this.lastCompletedJSONObjectCount);
 		if (newCompletedJSONObjects.length === 0) return null;
 		this.lastCompletedJSONObjectCount += newCompletedJSONObjects.length;
 		return newCompletedJSONObjects;
 	}
 };
 //#endregion
-export { IncompleteJSONParser_default as IncompleteJSONParser, JSONObjectStream, TextStream, TextStreamInterface };
+export { IncompleteJSONParser, JSONObjectStream, TextStream, TextStreamInterface };
 
 //# sourceMappingURL=index.js.map

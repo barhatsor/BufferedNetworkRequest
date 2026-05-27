@@ -16,25 +16,21 @@
   "keywords": [
     "fetch",
     "network",
+    "json",
     "response",
     "stream",
-    "request",
-    "buffer",
-    "parser",
-    "object",
-    "json",
-    "typescript",
-    "javascript",
-    "nodejs"
+    "request"
   ],
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
@@ -43,12 +39,14 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
     "demos:build": "tsdown --config demos/tsdown.config.ts",
-    "demos:dev": "tsdown --config demos/tsdown.config.ts --watch"
+    "demos:dev": "tsdown --config demos/tsdown.config.ts --watch",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@vitest/browser-playwright": "^4.1.4",
-    "tsdown": "^0.21.7",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.4"
+    "@vitest/browser-playwright": "^4.1.7",
+    "husky": "^9.1.7",
+    "tsdown": "^0.22.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

@@ -1,7 +1,7 @@
 
 import { expect, test } from 'vitest'
 import { createReadableStream } from './util/createReadableStream'
-import { JSONObjectStream } from '../dist'
+import { JSONObjectStream } from '../src'
 
 
 // --- JSONObjectStream ---

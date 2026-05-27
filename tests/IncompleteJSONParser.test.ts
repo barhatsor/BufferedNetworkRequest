@@ -1,6 +1,6 @@
 
 import { expect, test } from 'vitest'
-import { IncompleteJSONParser } from '../dist'
+import { IncompleteJSONParser } from '../src'
 
 
 // --- IncompleteJSONParser ---

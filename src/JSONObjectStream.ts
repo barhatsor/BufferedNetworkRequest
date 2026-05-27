@@ -1,6 +1,6 @@
 
 import { TextStreamInterface } from './TextStream'
-import IncompleteJSONParser from './IncompleteJSONParser'
+import { IncompleteJSONParser } from './IncompleteJSONParser'
 
 /**
  * Stream completed JSON objects in chunks from a `Response`.
