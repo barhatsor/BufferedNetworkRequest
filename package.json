@@ -21,9 +21,6 @@
     "stream",
     "request"
   ],
-  "files": [
-    "dist"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -31,6 +28,9 @@
     },
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
@@ -39,12 +39,10 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
     "demos:build": "tsdown --config demos/tsdown.config.ts",
-    "demos:dev": "tsdown --config demos/tsdown.config.ts --watch",
-    "prepare": "husky"
+    "demos:dev": "tsdown --config demos/tsdown.config.ts --watch"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^4.1.7",
-    "husky": "^9.1.7",
     "tsdown": "^0.22.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"

@@ -1,7 +1,9 @@
 
-// Simulated network profiles matching Chrome DevTools throttling presets.
-// bytesPerSecond = download throughput, latencyMs = initial round-trip delay.
-// https://github.com/ChromeDevTools/devtools-frontend/blob/d171921829581f059b68230952d7c4da3bc499eb/front_end/core/sdk/NetworkManager.ts#L498-L540
+/**
+ * Simulated network profiles matching Chrome DevTools throttling presets. \
+ * `bytesPerSecond` = download throughput, `latencyMs` = initial round-trip delay. \
+ * [DevTools Source](https://github.com/ChromeDevTools/devtools-frontend/blob/d171921829581f059b68230952d7c4da3bc499eb/front_end/core/sdk/NetworkManager.ts#L498-L540)
+ */
 export const throttleProfiles: Record<string, { bytesPerSecond: number, latencyMs: number }> = {
     none:   { bytesPerSecond: Infinity, latencyMs: 0 },
     fast4g: { bytesPerSecond: 9   * 1000 * 1000 / 8 * .9, latencyMs: 60 * 2.75 },   // 9 Mbps, 60ms RTT
@@ -9,17 +11,19 @@ export const throttleProfiles: Record<string, { bytesPerSecond: number, latencyM
     '3g':   { bytesPerSecond: 500 * 1000        / 8 * .8, latencyMs: 400 * 5 },     // ~500 Kbps, 400ms RTT
 }
 
-// Simulates a slow network connection by wrapping a ReadableStream
-// in a TransformStream that limits how fast data passes through.
-export function throttleStream(
-    body: ReadableStream<Uint8Array>,
+/**
+ * Simulates a slow network connection by wrapping a `Response`'s `ReadableStream`
+ * in a `TransformStream` that limits how fast data passes through.
+ */
+export function throttleStream({ stream, profile }: {
+    stream: NonNullable<Response['body']>,
     profile: { bytesPerSecond: number, latencyMs: number }
-): NonNullable<Response['body']> {
+}): NonNullable<Response['body']> {
 
     // Only apply the initial round-trip delay once (on the first chunk).
     let initialDelay = true
 
-    return body.pipeThrough(new TransformStream({
+    return stream.pipeThrough(new TransformStream({
 
         async transform(chunk, controller) {
 

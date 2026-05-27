@@ -10,11 +10,6 @@ export function getSelectedProfile() {
 }
 
 
-export function clear() {
-    statusEl.innerHTML = ''
-}
-
-
 export function setRunning(value: boolean) {
     runButton.disabled = value
     cancelButton.disabled = !value
@@ -30,11 +25,16 @@ export function onCancel(handler: () => void) {
 }
 
 
+export function clear() {
+    statusEl.innerHTML = ''
+}
+
+
 export function log(tag: string, text: string) {
     const el = document.createElement(tag)
     el.textContent = text
     statusEl.appendChild(el)
-    return el
+    scrollToBottom()
 }
 
 

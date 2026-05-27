@@ -14,8 +14,10 @@ ui.onCancel(() => abortController?.abort())
 async function run() {
 
     if (running) return
+
     running = true
     ui.setRunning(true)
+
     ui.clear()
 
     abortController = new AbortController()
@@ -31,45 +33,53 @@ async function run() {
             signal
         })
 
-        if (!response.ok || !response.body) {
-            ui.log('h3', 'An error occured while fetching the response.')
-            return
-        }
+        if (!response.ok) throw new Error(`Request failed: Code ${response.status}`)
+        if (!response.body) throw new Error(`Response was empty.`)
 
-        const shouldThrottle = profile.latencyMs > 0 || isFinite(profile.bytesPerSecond)
-        const body = shouldThrottle ?
-            throttleStream(response.body, profile) :
+        const shouldThrottle = (
+            profile.latencyMs !== 0 ||
+            isFinite(profile.bytesPerSecond)
+        )
+
+        const respBody = shouldThrottle ?
+            throttleStream({ stream: response.body, profile }) :
             response.body
 
-        const results = await streamObjects(body, signal)
+        const results = await streamObjects({ respBody, signal })
         showResults(results)
 
         console.info('[done] response', response)
 
-    } catch (e) {
+    } catch (error) {
 
-        if (e instanceof DOMException && e.name === 'AbortError') {
+        if (isAbortError(error)) {
             ui.log('h3', 'Cancelled.')
-            ui.scrollToBottom()
-        } else {
-            throw e
+            return
         }
 
+        throw error
+
     } finally {
+        
         running = false
         ui.setRunning(false)
+
     }
 
 }
 
-async function streamObjects(body: NonNullable<Response['body']>, signal: AbortSignal) {
+async function streamObjects({ respBody, signal }: {
+    respBody: NonNullable<Response['body']>,
+    signal: AbortSignal
+}) {
 
     const startTime = performance.now()
     let prevTime = startTime
     let firstLoadTime: number | null = null
+
     let totalObjects = 0
 
-    const stream = new JSONObjectStream(body)
+    const stream = new JSONObjectStream(respBody)
 
     for await (const objects of stream) {
 
@@ -83,7 +93,6 @@ async function streamObjects(body: NonNullable<Response['body']>, signal: AbortS
 
         const now = performance.now()
         ui.log('h2', `loaded ${objects.length} in +${ui.round(now - prevTime, 2)}ms`)
-        ui.scrollToBottom()
 
         prevTime = now
         firstLoadTime ??= now
@@ -107,6 +116,16 @@ function showResults({ startTime, firstLoadTime, totalObjects }: {
 
     ui.log('h3', `done. (loaded ${totalObjects} objects)`)
     ui.log('h1', `time saved: ${improvement}% (${ui.round(timeSaved / 1000, 2)}s of ${ui.round(totalTime / 1000, 2)}s)`)
-    ui.scrollToBottom()
 
+}
+
+
+type AbortError = DOMException & { name: 'AbortError' }
+
+/** https://webidl.spec.whatwg.org/#aborterror */
+function isAbortError(error: unknown): error is AbortError {
+    return (
+        error instanceof DOMException &&
+        error.name === 'AbortError'
+    )
 }
