@@ -1,9 +1,9 @@
 
 /**
- * A generic interface for streaming processed text chunks from a `Response`.
- * @template ChunkType The processed chunk type to stream.
+ * A generic interface for streaming transformed text chunks from a `Response`.
+ * @template O The transformed chunk type to stream.
  */
-export abstract class TextStreamInterface<ChunkType> implements AsyncIterable<ChunkType> {
+export abstract class TextStreamInterface<O> implements AsyncIterable<O> {
 
     private stream: ReadableStream<string>
 
@@ -22,7 +22,7 @@ export abstract class TextStreamInterface<ChunkType> implements AsyncIterable<Ch
 
     }
 
-    async *[Symbol.asyncIterator](): AsyncIterableIterator<ChunkType> {
+    async *[Symbol.asyncIterator](): AsyncIterableIterator<O> {
 
         const streamAsyncIteratorSupported = Symbol.asyncIterator in this.stream
 
@@ -32,18 +32,18 @@ export abstract class TextStreamInterface<ChunkType> implements AsyncIterable<Ch
 
         for await (const chunk of asyncIterableStream) {
 
-            const processedChunk = this.processChunk(chunk)
+            const transformedChunk = await this.transform(chunk)
 
-            if (processedChunk === null) { continue }
+            if (transformedChunk === null) { continue }
 
-            yield processedChunk
+            yield transformedChunk
 
         }
 
     }
 
-    /** Process the chunk. Return `null` to skip it. */
-    protected abstract processChunk(chunk: string): ChunkType | null
+    /** Transform the chunk. Return `null` to skip it. */
+    protected abstract transform(chunk: string): (O | null) | Promise<O | null>
 
     /**
      * Polyfill `ReadableStream`'s async iterator for Safari
@@ -90,7 +90,7 @@ export abstract class TextStreamInterface<ChunkType> implements AsyncIterable<Ch
  */
 export class TextStream extends TextStreamInterface<string> {
 
-    protected processChunk(chunk: string) {
+    protected transform(chunk: string) {
         return chunk
     }
 

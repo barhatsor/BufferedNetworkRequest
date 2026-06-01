@@ -10,7 +10,7 @@ export class JSONObjectStream extends TextStreamInterface<object[]> {
     private fullJSONStr = ''
     private lastCompletedJSONObjectCount = 0
 
-    protected processChunk(chunk: string) {
+    protected transform(chunk: string) {
 
         this.fullJSONStr += chunk
 
