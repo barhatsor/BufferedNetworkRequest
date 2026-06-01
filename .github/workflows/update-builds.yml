@@ -1,5 +1,4 @@
-
-name: Build
+name: Update Builds
 
 on:
   push:
@@ -11,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    permissions:
+      contents: write # To push the updated builds
+
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -24,7 +27,7 @@ jobs:
       - name: Build
         run: npm run build
       
-      # push changes to GitHub
+      # Push changes to GitHub
       - uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: 'Build'
+          commit_message: 'chore(build): Update Builds'
