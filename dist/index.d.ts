@@ -4,19 +4,19 @@
  */
 //#region src/TextStream.d.ts
 /**
- * A generic interface for streaming processed text chunks from a `Response`.
- * @template ChunkType The processed chunk type to stream.
+ * A generic interface for streaming transformed text chunks from a `Response`.
+ * @template O The transformed chunk type to stream.
  */
-declare abstract class TextStreamInterface<ChunkType> implements AsyncIterable<ChunkType> {
+declare abstract class TextStreamInterface<O> implements AsyncIterable<O> {
   private stream;
   /**
    * @param respBody A `Response`'s `body`.
    * @param textDecoderStream A custom text decoder stream to use.
    */
   constructor(respBody: NonNullable<Response['body']>, textDecoderStream?: TextDecoderStream);
-  [Symbol.asyncIterator](): AsyncIterableIterator<ChunkType>;
-  /** Process the chunk. Return `null` to skip it. */
-  protected abstract processChunk(chunk: string): ChunkType | null;
+  [Symbol.asyncIterator](): AsyncIterableIterator<O>;
+  /** Transform the chunk. Return `null` to skip it. */
+  protected abstract transform(chunk: string): (O | null) | Promise<O | null>;
   /**
    * Polyfill `ReadableStream`'s async iterator for Safari
    * (not neccessary in Safari 26.4+).
@@ -28,7 +28,7 @@ declare abstract class TextStreamInterface<ChunkType> implements AsyncIterable<C
  * Stream text chunks from a `Response`.
  */
 declare class TextStream extends TextStreamInterface<string> {
-  protected processChunk(chunk: string): string;
+  protected transform(chunk: string): string;
 }
 //#endregion
 //#region src/JSONObjectStream.d.ts
@@ -38,7 +38,7 @@ declare class TextStream extends TextStreamInterface<string> {
 declare class JSONObjectStream extends TextStreamInterface<object[]> {
   private fullJSONStr;
   private lastCompletedJSONObjectCount;
-  protected processChunk(chunk: string): object[] | null;
+  protected transform(chunk: string): object[] | null;
 }
 //#endregion
 //#region src/IncompleteJSONParser.d.ts

@@ -4,8 +4,8 @@
  */
 //#region src/TextStream.ts
 /**
-* A generic interface for streaming processed text chunks from a `Response`.
-* @template ChunkType The processed chunk type to stream.
+* A generic interface for streaming transformed text chunks from a `Response`.
+* @template O The transformed chunk type to stream.
 */
 var TextStreamInterface = class {
 	/**
@@ -18,9 +18,9 @@ var TextStreamInterface = class {
 	async *[Symbol.asyncIterator]() {
 		const asyncIterableStream = Symbol.asyncIterator in this.stream ? this.stream : this.polyfillReadableStreamAsyncIterator(this.stream);
 		for await (const chunk of asyncIterableStream) {
-			const processedChunk = this.processChunk(chunk);
-			if (processedChunk === null) continue;
-			yield processedChunk;
+			const transformedChunk = await this.transform(chunk);
+			if (transformedChunk === null) continue;
+			yield transformedChunk;
 		}
 	}
 	/**
@@ -45,7 +45,7 @@ var TextStreamInterface = class {
 * Stream text chunks from a `Response`.
 */
 var TextStream = class extends TextStreamInterface {
-	processChunk(chunk) {
+	transform(chunk) {
 		return chunk;
 	}
 };
@@ -99,7 +99,7 @@ var JSONObjectStream = class extends TextStreamInterface {
 		this.fullJSONStr = "";
 		this.lastCompletedJSONObjectCount = 0;
 	}
-	processChunk(chunk) {
+	transform(chunk) {
 		this.fullJSONStr += chunk;
 		const newCompletedJSONObjects = IncompleteJSONParser.parse(this.fullJSONStr).slice(this.lastCompletedJSONObjectCount);
 		if (newCompletedJSONObjects.length === 0) return null;
