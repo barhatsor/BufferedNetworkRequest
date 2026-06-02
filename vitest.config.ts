@@ -28,5 +28,11 @@ export default defineConfig({
         },
       },
     ],
+    // Note: coverage only supports V8 (Chromium / Node.js).
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/**/*.ts'],
+    }
   }
 })

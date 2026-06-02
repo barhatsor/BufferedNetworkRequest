@@ -36,6 +36,7 @@
     "dev": "tsdown --watch",
     "test": "vitest run",
     "test:dev": "vitest",
+    "coverage": "vitest --project node --coverage",
     "typecheck": "tsc --noEmit",
     "release": "bumpp",
     "demos:build": "tsdown --config demos/tsdown.config.ts",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.7",
     "bumpp": "^11.1.0",
     "conventional-changelog": "^7.2.0",
     "conventional-changelog-angular": "^8.3.1",
