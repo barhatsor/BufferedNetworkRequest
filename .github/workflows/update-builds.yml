@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  update-builds:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
