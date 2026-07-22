@@ -37,19 +37,19 @@
     "test": "vitest run",
     "test:dev": "vitest --browser.headless=false",
     "coverage": "vitest run --project node --coverage",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "release": "bumpp",
     "demos:build": "tsdown --config demos/tsdown.config.ts",
     "demos:dev": "tsdown --config demos/tsdown.config.ts --watch"
   },
   "devDependencies": {
-    "@vitest/browser-playwright": "^4.1.9",
-    "@vitest/coverage-v8": "^4.1.9",
-    "bumpp": "^11.1.0",
-    "conventional-changelog": "^8.0.0",
-    "conventional-changelog-angular": "^9.2.0",
-    "tsdown": "^0.22.3",
+    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10",
+    "bumpp": "^12.0.0",
+    "conventional-changelog": "^8.1.0",
+    "conventional-changelog-angular": "^9.2.1",
+    "tsdown": "^0.22.13",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   }
 }
