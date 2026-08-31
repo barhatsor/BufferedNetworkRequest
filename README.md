@@ -98,14 +98,14 @@ npm run test
 
 <!-- References -->
 [First Contentful Paint]: https://web.dev/articles/fcp
-[Benchmark]: https://cde.run/benhatsor/BufferedNetworkRequest/demos/bench/index.html
-[Basic Demo]: https://cde.run/benhatsor/BufferedNetworkRequest/demos/basic-demo/index.html
+[Benchmark]: https://cde.run/barhatsor/BufferedNetworkRequest/demos/bench/index.html
+[Basic Demo]: https://cde.run/barhatsor/BufferedNetworkRequest/demos/basic-demo/index.html
 [Web Streams API]: https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
 
 <!-- Badges -->
 [npm-version-img]: https://img.shields.io/npm/v/bufferednetworkrequest
 [npm-version-url]: https://www.npmjs.com/package/bufferednetworkrequest
-[minified-size-img]: https://img.shields.io/github/size/benhatsor/BufferedNetworkRequest/dist/index.min.js
+[minified-size-img]: https://img.shields.io/github/size/barhatsor/BufferedNetworkRequest/dist/index.min.js
 [minified-size-url]: /dist/index.min.js
-[ci-src]: https://github.com/benhatsor/BufferedNetworkRequest/actions/workflows/ci.yml/badge.svg
-[ci-href]: https://github.com/benhatsor/BufferedNetworkRequest/actions/workflows/ci.yml
+[ci-src]: https://github.com/barhatsor/BufferedNetworkRequest/actions/workflows/ci.yml/badge.svg
+[ci-href]: https://github.com/barhatsor/BufferedNetworkRequest/actions/workflows/ci.yml

@@ -3,15 +3,15 @@
   "type": "module",
   "version": "1.1.5",
   "description": "Make your interfaces render ~30% faster on 3G using streams and partial JSON parsing.",
-  "author": "benhatsor",
+  "author": "barhatsor",
   "license": "MIT",
-  "homepage": "https://github.com/benhatsor/BufferedNetworkRequest#readme",
+  "homepage": "https://github.com/barhatsor/BufferedNetworkRequest#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benhatsor/BufferedNetworkRequest.git"
+    "url": "git+https://github.com/barhatsor/BufferedNetworkRequest.git"
   },
   "bugs": {
-    "url": "https://github.com/benhatsor/BufferedNetworkRequest/issues"
+    "url": "https://github.com/barhatsor/BufferedNetworkRequest/issues"
   },
   "keywords": [
     "fetch",
