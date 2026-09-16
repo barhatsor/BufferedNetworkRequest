@@ -1,0 +1,13 @@
+
+body {
+  font-family: system-ui;
+}
+
+.status code {
+  display: block;
+  margin: 10px;
+}
+
+.status.loading {
+  color: #1a73e8;
+}

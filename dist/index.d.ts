@@ -7,7 +7,7 @@
  * A generic interface for streaming transformed text chunks from a `Response`.
  * @template O The transformed chunk type to stream.
  */
-declare abstract class TextStreamInterface<O> implements AsyncIterable<O> {
+export declare abstract class TextStreamInterface<O> implements AsyncIterable<O> {
   private stream;
   /**
    * @param respBody A `Response`'s `body`.
@@ -27,7 +27,7 @@ declare abstract class TextStreamInterface<O> implements AsyncIterable<O> {
 /**
  * Stream text chunks from a `Response`.
  */
-declare class TextStream extends TextStreamInterface<string> {
+export declare class TextStream extends TextStreamInterface<string> {
   protected transform(chunk: string): string;
 }
 //#endregion
@@ -35,7 +35,7 @@ declare class TextStream extends TextStreamInterface<string> {
 /**
  * Stream completed JSON objects in chunks from a `Response`.
  */
-declare class JSONObjectStream extends TextStreamInterface<object[]> {
+export declare class JSONObjectStream extends TextStreamInterface<object[]> {
   private fullJSONStr;
   private lastCompletedJSONObjectCount;
   protected transform(chunk: string): object[] | null;
@@ -45,9 +45,8 @@ declare class JSONObjectStream extends TextStreamInterface<object[]> {
 /**
  * Extracts valid objects from incomplete JSON.
  */
-declare const IncompleteJSONParser: {
+export declare const IncompleteJSONParser: {
   parse(jsonStr: string): object[];
 };
 //#endregion
-export { IncompleteJSONParser, JSONObjectStream, TextStream, TextStreamInterface };
 //# sourceMappingURL=index.d.ts.map

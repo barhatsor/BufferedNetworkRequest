@@ -3,9 +3,10 @@ import { playwright } from '@vitest/browser-playwright'
 
 export default defineConfig({
   test: {
-    include: ['tests/**.test.ts'],
+    include: ['tests/**/*.test.ts'],
     projects: [
       {
+        extends: true,
         test: {
           name: 'browser',
           browser: {
@@ -22,6 +23,7 @@ export default defineConfig({
         },
       },
       {
+        extends: true,
         test: {
           name: 'node',
           environment: 'node',

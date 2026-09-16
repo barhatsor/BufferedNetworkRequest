@@ -11,16 +11,16 @@ const throttleProfiles = {
 		latencyMs: 0
 	},
 	fast4g: {
-		bytesPerSecond: 9 * 1e3 * 1e3 / 8 * .9,
-		latencyMs: 60 * 2.75
+		bytesPerSecond: 1012500,
+		latencyMs: 165
 	},
 	slow4g: {
-		bytesPerSecond: 1.6 * 1e3 * 1e3 / 8 * .9,
-		latencyMs: 150 * 3.75
+		bytesPerSecond: 18e4,
+		latencyMs: 562.5
 	},
 	"3g": {
-		bytesPerSecond: 500 * 1e3 / 8 * .8,
-		latencyMs: 400 * 5
+		bytesPerSecond: 5e4,
+		latencyMs: 2e3
 	}
 };
 /**
