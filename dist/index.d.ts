@@ -2,7 +2,6 @@
  * BufferedNetworkRequest
  * @license MIT
  */
-//#region src/TextStream.d.ts
 /**
  * A generic interface for streaming transformed text chunks from a `Response`.
  * @template O The transformed chunk type to stream.
@@ -30,8 +29,6 @@ export declare abstract class TextStreamInterface<O> implements AsyncIterable<O>
 export declare class TextStream extends TextStreamInterface<string> {
   protected transform(chunk: string): string;
 }
-//#endregion
-//#region src/JSONObjectStream.d.ts
 /**
  * Stream completed JSON objects in chunks from a `Response`.
  */
@@ -40,13 +37,10 @@ export declare class JSONObjectStream extends TextStreamInterface<object[]> {
   private lastCompletedJSONObjectCount;
   protected transform(chunk: string): object[] | null;
 }
-//#endregion
-//#region src/IncompleteJSONParser.d.ts
 /**
  * Extracts valid objects from incomplete JSON.
  */
 export declare const IncompleteJSONParser: {
   parse(jsonStr: string): object[];
 };
-//#endregion
 //# sourceMappingURL=index.d.ts.map

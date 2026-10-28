@@ -2,7 +2,7 @@
  * BufferedNetworkRequest
  * @license MIT
  */
-//#region src/TextStream.ts
+// src/TextStream.ts
 /**
 * A generic interface for streaming transformed text chunks from a `Response`.
 * @template O The transformed chunk type to stream.
@@ -49,8 +49,7 @@ var TextStream = class extends TextStreamInterface {
 		return chunk;
 	}
 };
-//#endregion
-//#region src/IncompleteJSONParser.ts
+// src/IncompleteJSONParser.ts
 /**
 * Extracts valid objects from incomplete JSON.
 */
@@ -88,8 +87,7 @@ const IncompleteJSONParser = { parse(jsonStr) {
 	}
 	return completedJSONObjects;
 } };
-//#endregion
-//#region src/JSONObjectStream.ts
+// src/JSONObjectStream.ts
 /**
 * Stream completed JSON objects in chunks from a `Response`.
 */
@@ -107,7 +105,6 @@ var JSONObjectStream = class extends TextStreamInterface {
 		return newCompletedJSONObjects;
 	}
 };
-//#endregion
 export { IncompleteJSONParser, JSONObjectStream, TextStream, TextStreamInterface };
 
 //# sourceMappingURL=index.js.map
